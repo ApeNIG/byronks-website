@@ -52,6 +52,13 @@ function initMobileMenu() {
 function initCart() {
     const cartBtn = document.querySelector('.cart-btn');
     const cartCount = document.querySelector('.cart-count');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const closeCartBtn = document.querySelector('.close-cart-btn');
+    const cartContent = document.getElementById('cartContent');
+    const cartFooter = document.getElementById('cartFooter');
+    const cartTotal = document.getElementById('cartTotal');
+
     let cartItems = JSON.parse(localStorage.getItem('byronks-cart')) || [];
 
     // Update cart count display
@@ -66,6 +73,76 @@ function initCart() {
         }
     }
 
+    // Render cart items
+    function renderCart() {
+        if (!cartContent) return;
+
+        if (cartItems.length === 0) {
+            cartContent.innerHTML = `
+                <div class="cart-empty">
+                    <i data-lucide="shopping-bag"></i>
+                    <p>Your bag is empty</p>
+                </div>
+            `;
+            cartFooter.style.display = 'none';
+            lucide.createIcons();
+        } else {
+            cartContent.innerHTML = cartItems.map((item, index) => `
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
+                    </div>
+                    <div class="cart-item-details">
+                        <span class="cart-item-name">${item.name}</span>
+                        <span class="cart-item-price">${item.price}</span>
+                        <button class="cart-item-remove" data-index="${index}">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+            cartFooter.style.display = 'block';
+
+            // Calculate total
+            const total = cartItems.reduce((sum, item) => {
+                const price = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+                return sum + price;
+            }, 0);
+            cartTotal.textContent = `£${total.toFixed(0)}`;
+
+            // Add remove handlers
+            document.querySelectorAll('.cart-item-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    removeFromCart(index);
+                });
+            });
+        }
+    }
+
+    // Remove from cart
+    function removeFromCart(index) {
+        const item = cartItems[index];
+        cartItems.splice(index, 1);
+        localStorage.setItem('byronks-cart', JSON.stringify(cartItems));
+        updateCartCount();
+        renderCart();
+        showNotification(`${item.name} removed from bag`);
+    }
+
+    // Open cart drawer
+    function openCart() {
+        cartDrawer.classList.add('active');
+        cartOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        renderCart();
+    }
+
+    // Close cart drawer
+    function closeCart() {
+        cartDrawer.classList.remove('active');
+        cartOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
     // Add to cart function
     window.addToCart = function(product) {
         cartItems.push(product);
@@ -77,16 +154,27 @@ function initCart() {
     // Initial cart count
     updateCartCount();
 
-    // Cart button click
+    // Cart button click - open drawer
     if (cartBtn) {
-        cartBtn.addEventListener('click', () => {
-            if (cartItems.length === 0) {
-                showNotification('Your bag is empty');
-            } else {
-                showNotification(`${cartItems.length} item(s) in your bag`);
-            }
-        });
+        cartBtn.addEventListener('click', openCart);
     }
+
+    // Close cart button
+    if (closeCartBtn) {
+        closeCartBtn.addEventListener('click', closeCart);
+    }
+
+    // Close on overlay click
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', closeCart);
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && cartDrawer.classList.contains('active')) {
+            closeCart();
+        }
+    });
 }
 
 // Quick Add buttons on products
@@ -99,10 +187,12 @@ function initQuickAdd() {
             const productCard = btn.closest('.product-card');
             const productName = productCard.querySelector('.product-name').textContent;
             const productPrice = productCard.querySelector('.product-price').textContent;
+            const productImage = productCard.querySelector('.product-image img')?.src || '';
 
             window.addToCart({
                 name: productName,
                 price: productPrice,
+                image: productImage,
                 id: Date.now()
             });
 
