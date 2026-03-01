@@ -335,7 +335,58 @@
         <p class="footer-copy">&copy; 2026 BY RONKS. All rights reserved.</p>
     </footer>
 
+    <!-- Feedback Widget -->
+    <button class="feedback-btn" id="feedbackBtn" aria-label="Send feedback">
+        <i data-lucide="message-square-plus"></i>
+    </button>
+
+    <div class="feedback-panel" id="feedbackPanel">
+        <div class="feedback-header">
+            <h3>Send Feedback</h3>
+            <button class="feedback-close" id="feedbackClose" aria-label="Close">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="feedback-body" id="feedbackBody">
+            <form id="feedbackForm">
+                <div class="feedback-types">
+                    <button type="button" class="feedback-type bug" data-type="BUG">
+                        <i data-lucide="bug"></i>
+                        <span>Bug</span>
+                    </button>
+                    <button type="button" class="feedback-type feature" data-type="FEATURE">
+                        <i data-lucide="lightbulb"></i>
+                        <span>Feature</span>
+                    </button>
+                    <button type="button" class="feedback-type improve selected" data-type="IMPROVEMENT">
+                        <i data-lucide="sparkles"></i>
+                        <span>Improve</span>
+                    </button>
+                    <button type="button" class="feedback-type other" data-type="OTHER">
+                        <i data-lucide="help-circle"></i>
+                        <span>Other</span>
+                    </button>
+                </div>
+                <input type="text" class="feedback-input" id="feedbackTitle" placeholder="What's on your mind?" maxlength="200" required>
+                <textarea class="feedback-input" id="feedbackDesc" placeholder="Add more details (optional)" maxlength="2000"></textarea>
+                <p class="feedback-error" id="feedbackError" style="display: none;"></p>
+                <button type="submit" class="feedback-submit" id="feedbackSubmit">
+                    <i data-lucide="send"></i>
+                    Send Feedback
+                </button>
+            </form>
+        </div>
+        <div class="feedback-success" id="feedbackSuccess" style="display: none;">
+            <div class="feedback-success-icon">
+                <i data-lucide="check"></i>
+            </div>
+            <h4>Thank you!</h4>
+            <p>Your feedback has been received.</p>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
+    <script src="js/feedback.js"></script>
     <script>
         lucide.createIcons();
     </script>
