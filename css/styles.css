@@ -436,6 +436,40 @@ button {
     text-align: center;
 }
 
+/* Length Pills */
+.product-lengths {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin: 6px 0;
+}
+
+.length-pill {
+    padding: 3px 8px;
+    font-size: 10px;
+    font-family: var(--font-primary);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: var(--color-bg-alt);
+    border: 1px solid transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all var(--transition);
+    line-height: 1.4;
+}
+
+.length-pill:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-light);
+}
+
+.length-pill.active {
+    color: var(--color-text);
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+}
+
 .product-name {
     font-size: 12px;
     font-weight: 400;

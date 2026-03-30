@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNewsletterForm();
     initSmoothScroll();
     initBookingButton();
+    initLengthPills();
     initQuickAdd();
 });
 
@@ -177,6 +178,26 @@ function initCart() {
     });
 }
 
+// Length pills
+function initLengthPills() {
+    document.querySelectorAll('.product-card[data-lengths]').forEach(card => {
+        const lengths = card.dataset.lengths.split(',');
+        const container = card.querySelector('.product-lengths');
+        if (!container) return;
+
+        container.innerHTML = lengths.map((len, i) =>
+            `<button class="length-pill${i === 0 ? ' active' : ''}" data-length="${len}">${len}"</button>`
+        ).join('');
+
+        container.addEventListener('click', (e) => {
+            const pill = e.target.closest('.length-pill');
+            if (!pill) return;
+            container.querySelectorAll('.length-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+        });
+    });
+}
+
 // Quick Add buttons on products
 function initQuickAdd() {
     const quickAddBtns = document.querySelectorAll('.quick-add');
@@ -188,9 +209,11 @@ function initQuickAdd() {
             const productName = productCard.querySelector('.product-name').textContent;
             const productPrice = productCard.querySelector('.product-price').textContent;
             const productImage = productCard.querySelector('.product-image img')?.src || '';
+            const activePill = productCard.querySelector('.length-pill.active');
+            const selectedLength = activePill ? activePill.dataset.length + '"' : '';
 
             window.addToCart({
-                name: productName,
+                name: selectedLength ? `${productName} - ${selectedLength}` : productName,
                 price: productPrice,
                 image: productImage,
                 id: Date.now()
